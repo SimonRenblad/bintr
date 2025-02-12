@@ -1,14 +1,14 @@
-use std::{collections::VecDeque, io::Write, fs::File};
+use std::{collections::VecDeque, fmt::Display, io::Write, fs::File};
 
 #[derive(Debug)]
-struct Node {
-    val: u32,
-    left: Option<Box<Node>>,
-    right: Option<Box<Node>>,
+struct Node<T>{
+    val: T,
+    left: Option<Box<Node<T>>>,
+    right: Option<Box<Node<T>>>,
 }
 
-impl Node {
-    pub fn new(val: u32, left: Option<Box<Node>>, right: Option<Box<Node>>) -> Self {
+impl<T> Node<T> {
+    pub fn new(val: T, left: Option<Box<Node<T>>>, right: Option<Box<Node<T>>>) -> Self {
         Node {
             val,
             left,
@@ -17,8 +17,8 @@ impl Node {
     }
 }
 
-fn breadth_first_traversal<T: Write>(root: Box<Node>, writer: &mut T) -> std::io::Result<()> {
-   let mut queue: VecDeque<Option<Box<Node>>> = VecDeque::new();
+fn breadth_first_traversal<T: Write, A: Display>(root: Box<Node<A>>, writer: &mut T) -> std::io::Result<()> {
+   let mut queue: VecDeque<Option<Box<Node<A>>>> = VecDeque::new();
    let mut depth_queue: VecDeque<u32> = VecDeque::new();
    let mut current_depth = 0;
    queue.push_back(Some(root));
@@ -47,9 +47,9 @@ fn breadth_first_traversal<T: Write>(root: Box<Node>, writer: &mut T) -> std::io
    Ok(())
 }
 
-fn write_to_dot<T: Write>(writer: &mut T, root: Box<Node>) -> std::io::Result<()> {
+fn write_to_dot<T: Write, A: Display>(writer: &mut T, root: Box<Node<A>>) -> std::io::Result<()> {
    write!(writer, "digraph {{\n")?;
-   let mut queue: VecDeque<Box<Node>> = VecDeque::new();
+   let mut queue: VecDeque<Box<Node<A>>> = VecDeque::new();
    queue.push_back(root);
    loop {
        let r = queue.pop_front();
